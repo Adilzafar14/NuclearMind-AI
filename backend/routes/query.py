@@ -9,24 +9,27 @@ import re
 load_dotenv()
 
 router = APIRouter()
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 class QueryRequest(BaseModel):
     query: str
 
+def get_client():
+    return Groq(api_key=os.getenv("GROQ_API_KEY"))
+
 @router.get("/health")
 def health():
-    return {"status": "OK", "service": "NuclearMind AI Query Engine"}
+    return {"status": "OK", "service": "NuclearMind AI"}
 
 @router.post("/analyze")
 def analyze(body: QueryRequest):
+    client = get_client()
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[
             {
                 "role": "system",
                 "content": """You are a senior nuclear and renewable energy engineer.
-Analyze the query and respond ONLY in this exact JSON format:
+Respond ONLY in this exact JSON format:
 {
   "title": "brief title max 10 words",
   "category": "NUCLEAR or RENEWABLE or GRID or SAFETY",
@@ -36,20 +39,17 @@ Analyze the query and respond ONLY in this exact JSON format:
   "recommendation": "1-2 sentence engineering recommendation"
 }"""
             },
-            {
-                "role": "user",
-                "content": body.query
-            }
+            {"role": "user", "content": body.query}
         ],
         temperature=0.3,
         max_tokens=800,
     )
-
     raw = response.choices[0].message.content
     match = re.search(r'\{.*\}', raw, re.DOTALL)
     if match:
         return json.loads(match.group())
     return {"summary": raw}
+
 @router.post("/rag")
 def rag_analyze(body: QueryRequest):
     try:
