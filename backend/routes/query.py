@@ -50,3 +50,19 @@ Analyze the query and respond ONLY in this exact JSON format:
     if match:
         return json.loads(match.group())
     return {"summary": raw}
+@router.post("/rag")
+def rag_analyze(body: QueryRequest):
+    try:
+        from rag import rag_query
+        return rag_query(body.query)
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ingest")
+def ingest_documents():
+    try:
+        from ingest import ingest_pdfs
+        count = ingest_pdfs()
+        return {"status": "success", "chunks_created": count}
+    except Exception as e:
+        return {"error": str(e)}
