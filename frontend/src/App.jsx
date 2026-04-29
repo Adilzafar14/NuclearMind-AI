@@ -2,7 +2,7 @@ import { useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import SensorDashboard from "./SensorDashboard";
 
-const API = "http://127.0.0.1:8000/api";
+const API = "https://nuclearmind-ai.onrender.com/api";
 const RISK_COLORS = { HIGH: "#ff4444", MEDIUM: "#ffaa00", LOW: "#00cc66" };
 const CAT_COLORS = ["#00d4ff", "#a855f7", "#ff6b35", "#22c55e"];
 
